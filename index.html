@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis Gaya Belajar Anak</title>
+    <title>Kuis Gaya Belajar & Kecerdasan Majemuk Anak</title>
     <style>
         * {
             box-sizing: border-box;
@@ -26,7 +26,7 @@
             border-radius: 20px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             padding: 40px;
             margin: 20px;
         }
@@ -36,6 +36,12 @@
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.2em;
+        }
+
+        h2 {
+            color: #444;
+            margin: 25px 0 15px 0;
+            font-size: 1.6em;
         }
 
         .welcome-screen, .question-screen, .result-screen {
@@ -59,11 +65,25 @@
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
             margin: 10px;
+            display: inline-block;
+            text-decoration: none;
         }
 
         .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+        }
+
+        .btn-instagram {
+            background: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%);
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .question {
@@ -137,6 +157,48 @@
             margin-bottom: 20px;
         }
 
+        .intelligence-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .intelligence-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .intelligence-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .intelligence-bar {
+            background: #e9ecef;
+            border-radius: 5px;
+            height: 20px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+
+        .intelligence-progress {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+            transition: width 1s ease-in-out;
+        }
+
+        .intelligence-percentage {
+            text-align: right;
+            font-size: 0.9em;
+            color: #666;
+        }
+
         .tips {
             background: #fff3cd;
             border-left: 4px solid #ffc107;
@@ -145,8 +207,53 @@
             border-radius: 5px;
         }
 
+        .share-section {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .share-title {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            padding: 12px 25px;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .hidden {
             display: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
         }
 
         .visual { border-left: 4px solid #28a745; }
@@ -165,6 +272,19 @@
             .question {
                 font-size: 1.2em;
             }
+
+            .share-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .share-btn {
+                width: 200px;
+            }
+
+            .intelligence-results {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -172,10 +292,11 @@
     <div class="container">
         <!-- Layar Selamat Datang -->
         <div id="welcomeScreen" class="welcome-screen">
-            <h1>Kuis Gaya Belajar Anak</h1>
+            <h1>Kuis Gaya Belajar & Kecerdasan Majemuk Anak</h1>
             <p>
                 Setiap anak memiliki cara belajar yang unik. Kuis ini akan membantu Anda 
-                mengidentifikasi gaya belajar dominan anak Anda: <strong>Visual, Auditori, atau Kinestetik</strong>.
+                mengidentifikasi <strong>gaya belajar dominan</strong> dan <strong>kecerdasan majemuk</strong> 
+                anak Anda berdasarkan teori Howard Gardner.
                 <br><br>
                 Pilih jawaban yang paling menggambarkan kebiasaan belajar anak Anda.
             </p>
@@ -194,75 +315,179 @@
 
         <!-- Layar Hasil -->
         <div id="resultScreen" class="result-screen hidden">
-            <h1>Hasil Gaya Belajar Anak Anda</h1>
+            <h1>Hasil Analisis Anak Anda</h1>
             <div class="result-card" id="resultContent">
                 <!-- Hasil akan dimuat di sini oleh JavaScript -->
             </div>
+
+            <!-- Section Kecerdasan Majemuk -->
+            <div id="intelligenceResults" class="intelligence-results">
+                <!-- Hasil kecerdasan majemuk akan dimuat di sini -->
+            </div>
+
+            <!-- Section Share -->
+            <div class="share-section">
+                <div class="share-title">Bagikan Hasil Ini</div>
+                <div class="share-buttons">
+                    <button class="btn share-btn btn-whatsapp" onclick="shareToWhatsApp()">
+                        📱 WhatsApp
+                    </button>
+                    <button class="btn share-btn btn-whatsapp" onclick="shareToWhatsAppStatus()">
+                        📸 Status WA
+                    </button>
+                    <button class="btn share-btn btn-instagram" onclick="shareToInstagram()">
+                        📷 Instagram
+                    </button>
+                    <button class="btn share-btn btn-copy" onclick="copyResults()">
+                        📋 Copy Hasil
+                    </button>
+                </div>
+            </div>
+
             <button class="btn" onclick="restartQuiz()">Ulangi Kuis</button>
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
     <script>
-        // Data pertanyaan dan opsi jawaban
+        // Data pertanyaan untuk gaya belajar dan kecerdasan majemuk
         const questions = [
+            // Gaya Belajar (6 pertanyaan pertama)
             {
                 question: "Ketika belajar hal baru, anak Anda cenderung:",
                 options: [
-                    { text: "Mengamati gambar/diagram dengan seksama", type: "visual" },
-                    { text: "Mendengarkan penjelasan dengan teliti", type: "auditory" },
-                    { text: "Langsung mencoba mempraktikkannya", type: "kinesthetic" }
+                    { text: "Mengamati gambar/diagram dengan seksama", types: { visual: 2 } },
+                    { text: "Mendengarkan penjelasan dengan teliti", types: { auditory: 2 } },
+                    { text: "Langsung mencoba mempraktikkannya", types: { kinesthetic: 2 } }
                 ]
             },
             {
                 question: "Saat mengingat informasi, anak Anda paling mudah dengan:",
                 options: [
-                    { text: "Membayangkan atau melihat gambarnya di pikiran", type: "visual" },
-                    { text: "Mendengarkan atau mengucapkan berulang kali", type: "auditory" },
-                    { text: "Melakukan gerakan atau tindakan fisik", type: "kinesthetic" }
+                    { text: "Membayangkan atau melihat gambarnya di pikiran", types: { visual: 2, spatial: 1 } },
+                    { text: "Mendengarkan atau mengucapkan berulang kali", types: { auditory: 2, linguistic: 1 } },
+                    { text: "Melakukan gerakan atau tindakan fisik", types: { kinesthetic: 2, bodily: 1 } }
                 ]
             },
             {
                 question: "Ketika membaca buku, anak Anda biasanya:",
                 options: [
-                    { text: "Fokus pada gambar dan layout halaman", type: "visual" },
-                    { text: "Suka membaca dengan suara keras", type: "auditory" },
-                    { text: "Tidak bisa duduk diam dan sambil memegang sesuatu", type: "kinesthetic" }
+                    { text: "Fokus pada gambar dan layout halaman", types: { visual: 2, spatial: 1 } },
+                    { text: "Suka membaca dengan suara keras", types: { auditory: 2, linguistic: 1 } },
+                    { text: "Tidak bisa duduk diam dan sambil memegang sesuatu", types: { kinesthetic: 2, bodily: 1 } }
                 ]
             },
             {
                 question: "Dalam kegiatan sehari-hari, anak Anda paling suka:",
                 options: [
-                    { text: "Menggambar, mewarnai, atau puzzle", type: "visual" },
-                    { text: "Bernyanyi, berbicara, atau mendengarkan musik", type: "auditory" },
-                    { text: "Bermain fisik, olahraga, atau menari", type: "kinesthetic" }
+                    { text: "Menggambar, mewarnai, atau puzzle", types: { visual: 1, spatial: 2 } },
+                    { text: "Bernyanyi, berbicara, atau mendengarkan musik", types: { auditory: 1, musical: 2 } },
+                    { text: "Bermain fisik, olahraga, atau menari", types: { kinesthetic: 1, bodily: 2 } }
                 ]
             },
             {
                 question: "Saat menyelesaikan masalah, anak Anda lebih memilih:",
                 options: [
-                    { text: "Melihat contoh atau diagram penyelesaian", type: "visual" },
-                    { text: "Mendiskusikan berbagai solusi", type: "auditory" },
-                    { text: "Mencoba-coba sampai menemukan jawaban", type: "kinesthetic" }
+                    { text: "Melihat contoh atau diagram penyelesaian", types: { visual: 2, logical: 1 } },
+                    { text: "Mendiskusikan berbagai solusi", types: { auditory: 2, interpersonal: 1 } },
+                    { text: "Mencoba-coba sampai menemukan jawaban", types: { kinesthetic: 2, bodily: 1 } }
                 ]
             },
             {
                 question: "Ketika diberi instruksi, anak Anda:",
                 options: [
-                    { text: "Lebih mudah mengikuti dengan melihat demonstrasi", type: "visual" },
-                    { text: "Cukup mendengar penjelasan verbal", type: "auditory" },
-                    { text: "Perlu langsung mempraktikkan langkah-langkahnya", type: "kinesthetic" }
+                    { text: "Lebih mudah mengikuti dengan melihat demonstrasi", types: { visual: 2 } },
+                    { text: "Cukup mendengar penjelasan verbal", types: { auditory: 2 } },
+                    { text: "Perlu langsung mempraktikkan langkah-langkahnya", types: { kinesthetic: 2 } }
+                ]
+            },
+            // Kecerdasan Majemuk (pertanyaan tambahan)
+            {
+                question: "Anak Anda dalam bersosialisasi cenderung:",
+                options: [
+                    { text: "Mudah berteman dan suka bekerja dalam kelompok", types: { interpersonal: 2 } },
+                    { text: "Lebih suka menyendiri dan memahami perasaannya sendiri", types: { intrapersonal: 2 } },
+                    { text: "Suka memimpin dan mengorganisir teman-temannya", types: { interpersonal: 2, intrapersonal: 1 } }
+                ]
+            },
+            {
+                question: "Ketika berhadapan dengan alam, anak Anda:",
+                options: [
+                    { text: "Suka mengamati tanaman, hewan, dan fenomena alam", types: { naturalist: 2 } },
+                    { text: "Senang berkebun atau memelihara hewan peliharaan", types: { naturalist: 2, bodily: 1 } },
+                    { text: "Lebih tertarik pada hal-hal buatan manusia", types: { logical: 1, spatial: 1 } }
+                ]
+            },
+            {
+                question: "Dalam hal angka dan logika, anak Anda:",
+                options: [
+                    { text: "Suka menghitung dan memecahkan masalah matematika", types: { logical: 2 } },
+                    { text: "Senang dengan pola, urutan, dan teka-teki logika", types: { logical: 2, spatial: 1 } },
+                    { text: "Lebih tertarik pada cerita dan kata-kata", types: { linguistic: 2 } }
+                ]
+            },
+            {
+                question: "Ketika berhadapan dengan musik, anak Anda:",
+                options: [
+                    { text: "Mudah mengingat lagu dan irama", types: { musical: 2 } },
+                    { text: "Suka bernyanyi atau memainkan alat musik", types: { musical: 2, bodily: 1 } },
+                    { text: "Menggunakan musik sebagai latar belajar", types: { musical: 1, auditory: 1 } }
+                ]
+            },
+            {
+                question: "Dalam berekspresi, anak Anda paling pandai:",
+                options: [
+                    { text: "Bercerita, berdebat, atau menulis cerita", types: { linguistic: 2 } },
+                    { text: "Menggambar, melukis, atau membuat kerajinan", types: { spatial: 2 } },
+                    { text: "Menari, olahraga, atau akting", types: { bodily: 2 } }
+                ]
+            },
+            {
+                question: "Saat merencanakan sesuatu, anak Anda:",
+                options: [
+                    { text: "Membuat daftar dan berpikir sistematis", types: { logical: 2 } },
+                    { text: "Berimajinasi dan memvisualisasikan hasilnya", types: { spatial: 2 } },
+                    { text: "Mengikuti perasaan dan intuisi", types: { intrapersonal: 2 } }
                 ]
             }
         ];
 
+        // Definisi kecerdasan majemuk
+        const intelligenceDefinitions = {
+            visual: { name: "Visual", description: "Belajar melalui gambar dan penglihatan" },
+            auditory: { name: "Auditori", description: "Belajar melalui suara dan pendengaran" },
+            kinesthetic: { name: "Kinestetik", description: "Belajar melalui gerakan dan sentuhan" },
+            linguistic: { name: "Linguistik", description: "Cerdas dalam kata-kata dan bahasa" },
+            logical: { name: "Matematis-Logis", description: "Cerdas dalam angka dan logika" },
+            spatial: { name: "Spasial", description: "Cerdas dalam gambar dan ruang" },
+            bodily: { name: "Kinestetik-Tubuh", description: "Cerdas dalam gerakan tubuh" },
+            musical: { name: "Musikal", description: "Cerdas dalam musik dan irama" },
+            interpersonal: { name: "Interpersonal", description: "Cerdas dalam hubungan sosial" },
+            intrapersonal: { name: "Intrapersonal", description: "Cerdas memahami diri sendiri" },
+            naturalist: { name: "Naturalis", description: "Cerdas dalam memahami alam" }
+        };
+
         // Variabel untuk melacak status kuis
         let currentQuestionIndex = 0;
         let scores = {
+            // Gaya Belajar
             visual: 0,
             auditory: 0,
-            kinesthetic: 0
+            kinesthetic: 0,
+            // Kecerdasan Majemuk
+            linguistic: 0,
+            logical: 0,
+            spatial: 0,
+            bodily: 0,
+            musical: 0,
+            interpersonal: 0,
+            intrapersonal: 0,
+            naturalist: 0
         };
         let selectedOption = null;
+        let finalResult = '';
 
         // Fungsi untuk memulai kuis
         function startQuiz() {
@@ -283,7 +508,7 @@
                 const optionElement = document.createElement('div');
                 optionElement.className = 'option';
                 optionElement.textContent = option.text;
-                optionElement.onclick = () => selectOption(optionElement, option.type);
+                optionElement.onclick = () => selectOption(optionElement, option.types);
                 optionsContainer.appendChild(optionElement);
             });
             
@@ -297,14 +522,14 @@
         }
 
         // Fungsi untuk memilih opsi
-        function selectOption(optionElement, type) {
+        function selectOption(optionElement, types) {
             // Hapus seleksi sebelumnya
             const options = document.querySelectorAll('.option');
             options.forEach(opt => opt.classList.remove('selected'));
             
             // Tandai opsi yang dipilih
             optionElement.classList.add('selected');
-            selectedOption = type;
+            selectedOption = types;
             
             // Aktifkan tombol lanjut
             document.getElementById('nextButton').disabled = false;
@@ -313,7 +538,13 @@
         // Fungsi untuk lanjut ke pertanyaan berikutnya
         function nextQuestion() {
             if (selectedOption) {
-                scores[selectedOption]++;
+                // Tambahkan skor untuk setiap tipe dalam opsi yang dipilih
+                for (const [type, score] of Object.entries(selectedOption)) {
+                    if (scores.hasOwnProperty(type)) {
+                        scores[type] += score;
+                    }
+                }
+                
                 currentQuestionIndex++;
                 
                 if (currentQuestionIndex < questions.length) {
@@ -341,6 +572,9 @@
                 dominantStyle = 'kinesthetic';
                 maxScore = scores.kinesthetic;
             }
+            
+            // Simpan hasil final untuk sharing
+            finalResult = dominantStyle;
             
             // Tampilkan hasil berdasarkan gaya belajar dominan
             const resultContent = document.getElementById('resultContent');
@@ -404,25 +638,210 @@
                 `;
             }
             
-            // Tambahkan skor detail
-            resultHTML += `
-                <div style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 10px;">
-                    <strong>Detail Skor:</strong><br>
-                    Visual: ${scores.visual} | Auditori: ${scores.auditory} | Kinestetik: ${scores.kinesthetic}
-                </div>
-            `;
-            
             resultContent.innerHTML = resultHTML;
+            
+            // Tampilkan hasil kecerdasan majemuk
+            showIntelligenceResults();
+        }
+
+        // Fungsi untuk menampilkan hasil kecerdasan majemuk
+        function showIntelligenceResults() {
+            const container = document.getElementById('intelligenceResults');
+            container.innerHTML = '<h2>Profil Kecerdasan Majemuk</h2>';
+            
+            // Hitung total skor maksimal yang mungkin untuk normalisasi
+            const maxPossibleScores = calculateMaxPossibleScores();
+            
+            // Buat array dari scores untuk diurutkan
+            const intelligenceArray = Object.entries(scores)
+                .filter(([key]) => !['visual', 'auditory', 'kinesthetic'].includes(key))
+                .map(([key, value]) => {
+                    const percentage = Math.min(100, Math.round((value / maxPossibleScores[key]) * 100));
+                    return {
+                        key,
+                        name: intelligenceDefinitions[key].name,
+                        description: intelligenceDefinitions[key].description,
+                        percentage: percentage,
+                        score: value
+                    };
+                })
+                .sort((a, b) => b.percentage - a.percentage);
+            
+            // Tampilkan dalam container
+            intelligenceArray.forEach(intelligence => {
+                const item = document.createElement('div');
+                item.className = 'intelligence-item';
+                item.innerHTML = `
+                    <div class="intelligence-name">${intelligence.name}</div>
+                    <div class="intelligence-description">${intelligence.description}</div>
+                    <div class="intelligence-bar">
+                        <div class="intelligence-progress" style="width: ${intelligence.percentage}%"></div>
+                    </div>
+                    <div class="intelligence-percentage">${intelligence.percentage}%</div>
+                `;
+                container.appendChild(item);
+            });
+            
+            // Animate progress bars after a short delay
+            setTimeout(() => {
+                document.querySelectorAll('.intelligence-progress').forEach(bar => {
+                    bar.style.transition = 'width 1.5s ease-in-out';
+                });
+            }, 100);
+        }
+
+        // Fungsi untuk menghitung skor maksimal yang mungkin
+        function calculateMaxPossibleScores() {
+            const maxScores = {
+                visual: 0, auditory: 0, kinesthetic: 0,
+                linguistic: 0, logical: 0, spatial: 0, bodily: 0,
+                musical: 0, interpersonal: 0, intrapersonal: 0, naturalist: 0
+            };
+            
+            questions.forEach(question => {
+                question.options.forEach(option => {
+                    for (const [type, score] of Object.entries(option.types)) {
+                        if (maxScores.hasOwnProperty(type)) {
+                            maxScores[type] += score;
+                        }
+                    }
+                });
+            });
+            
+            return maxScores;
         }
 
         // Fungsi untuk mengulang kuis
         function restartQuiz() {
             currentQuestionIndex = 0;
-            scores = { visual: 0, auditory: 0, kinesthetic: 0 };
+            scores = {
+                visual: 0, auditory: 0, kinesthetic: 0,
+                linguistic: 0, logical: 0, spatial: 0, bodily: 0,
+                musical: 0, interpersonal: 0, intrapersonal: 0, naturalist: 0
+            };
             selectedOption = null;
+            finalResult = '';
             
             document.getElementById('resultScreen').classList.add('hidden');
             document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+
+        // Fungsi untuk menampilkan toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Fungsi untuk share ke WhatsApp
+        function shareToWhatsApp() {
+            const styleNames = {
+                visual: "Visual 🎨",
+                auditory: "Auditori 🎵", 
+                kinesthetic: "Kinestetik 🏃"
+            };
+            
+            // Ambil 3 kecerdasan teratas
+            const topIntelligences = Object.entries(scores)
+                .filter(([key]) => !['visual', 'auditory', 'kinesthetic'].includes(key))
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 3)
+                .map(([key]) => intelligenceDefinitions[key].name);
+            
+            const message = `Saya baru saja mengikuti Kuis Gaya Belajar & Kecerdasan Majemuk Anak!
+
+Hasil Gaya Belajar: ${styleNames[finalResult]}
+
+Kecerdasan Teratas:
+• ${topIntelligences[0]}
+• ${topIntelligences[1]} 
+• ${topIntelligences[2]}
+
+Anak saya adalah pembelajar ${finalResult === 'visual' ? 'visual yang efektif belajar melalui gambar dan visualisasi' : finalResult === 'auditory' ? 'auditori yang efektif belajar melalui suara dan diskusi' : 'kinestetik yang efektif belajar melalui gerakan dan praktik langsung'}.
+
+Coba kuisnya di: ${window.location.href}`;
+
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+        }
+
+        // Fungsi untuk share ke Status WhatsApp
+        function shareToWhatsAppStatus() {
+            showToast("Untuk share ke Status WA, buka WhatsApp → Status → share dari galeri");
+            shareToWhatsApp();
+        }
+
+        // Fungsi untuk share ke Instagram
+        function shareToInstagram() {
+            const styleNames = {
+                visual: "Visual 🎨",
+                auditory: "Auditori 🎵",
+                kinesthetic: "Kinestetik 🏃"
+            };
+            
+            const topIntelligences = Object.entries(scores)
+                .filter(([key]) => !['visual', 'auditory', 'kinesthetic'].includes(key))
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 2)
+                .map(([key]) => intelligenceDefinitions[key].name);
+            
+            const message = `Anak saya adalah Pembelajar ${styleNames[finalResult]}! 
+            
+Hasil dari Kuis Gaya Belajar & Kecerdasan Majemuk. 
+Kecerdasan teratas: ${topIntelligences.join(' & ')}
+
+Setiap anak unik dengan cara belajar yang berbeda! ✨
+
+#GayaBelajar #KecerdasanMajemuk #Parenting #EdukasiAnak`;
+
+            showToast("Salin teks hasil dan tempel di Instagram Story!");
+            
+            // Copy teks ke clipboard
+            const textArea = document.createElement('textarea');
+            textArea.value = message;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+        }
+
+        // Fungsi untuk copy hasil
+        function copyResults() {
+            const styleNames = {
+                visual: "Visual 🎨",
+                auditory: "Auditori 🎵",
+                kinesthetic: "Kinestetik 🏃"
+            };
+            
+            const topIntelligences = Object.entries(scores)
+                .filter(([key]) => !['visual', 'auditory', 'kinesthetic'].includes(key))
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 5)
+                .map(([key, value]) => `${intelligenceDefinitions[key].name}: ${value}%`);
+            
+            const resultText = `HASIL KUIS GAYA BELAJAR & KECERDASAN MAJEMUK
+
+Gaya Belajar Dominan: ${styleNames[finalResult]}
+
+Profil Kecerdasan Majemuk:
+${topIntelligences.join('\n')}
+
+${finalResult === 'visual' ? 'Tips: Gunakan gambar, diagram, warna, video edukasi, mind map, dan flashcard berwarna.' : finalResult === 'auditory' ? 'Tips: Gunakan audio, diskusi, lagu, baca keras, dan grup belajar.' : 'Tips: Lakukan eksperimen, gunakan benda fisik, izinkan bergerak, role-play, dan aktivitas fisik.'}
+
+Coba kuisnya di: ${window.location.href}`;
+
+            const textArea = document.createElement('textarea');
+            textArea.value = resultText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            showToast('Hasil berhasil disalin ke clipboard!');
         }
     </script>
 </body>
