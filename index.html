@@ -256,6 +256,17 @@
             opacity: 1;
         }
 
+        .url-display {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            word-break: break-all;
+            font-size: 0.9em;
+            color: #333;
+        }
+
         .visual { border-left: 4px solid #28a745; }
         .auditory { border-left: 4px solid #dc3545; }
         .kinesthetic { border-left: 4px solid #ffc107; }
@@ -342,6 +353,11 @@
                         📋 Copy Hasil
                     </button>
                 </div>
+                <!-- Tampilkan URL untuk memudahkan copy manual -->
+                <div class="url-display" id="urlDisplay">
+                    <strong>Link Kuis:</strong><br>
+                    <span id="currentUrl">https://contoh.github.io/kuis-gaya-belajar</span>
+                </div>
             </div>
 
             <button class="btn" onclick="restartQuiz()">Ulangi Kuis</button>
@@ -354,7 +370,6 @@
     <script>
         // Data pertanyaan untuk gaya belajar dan kecerdasan majemuk
         const questions = [
-            // Gaya Belajar (6 pertanyaan pertama)
             {
                 question: "Ketika belajar hal baru, anak Anda cenderung:",
                 options: [
@@ -403,7 +418,6 @@
                     { text: "Perlu langsung mempraktikkan langkah-langkahnya", types: { kinesthetic: 2 } }
                 ]
             },
-            // Kecerdasan Majemuk (pertanyaan tambahan)
             {
                 question: "Anak Anda dalam bersosialisasi cenderung:",
                 options: [
@@ -488,6 +502,10 @@
         };
         let selectedOption = null;
         let finalResult = '';
+        let topIntelligences = [];
+
+        // Set URL saat halaman dimuat
+        document.getElementById('currentUrl').textContent = window.location.href;
 
         // Fungsi untuk memulai kuis
         function startQuiz() {
@@ -575,6 +593,13 @@
             
             // Simpan hasil final untuk sharing
             finalResult = dominantStyle;
+            
+            // Hitung kecerdasan teratas untuk sharing
+            topIntelligences = Object.entries(scores)
+                .filter(([key]) => !['visual', 'auditory', 'kinesthetic'].includes(key))
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 3)
+                .map(([key]) => intelligenceDefinitions[key].name);
             
             // Tampilkan hasil berdasarkan gaya belajar dominan
             const resultContent = document.getElementById('resultContent');
@@ -721,6 +746,7 @@
             };
             selectedOption = null;
             finalResult = '';
+            topIntelligences = [];
             
             document.getElementById('resultScreen').classList.add('hidden');
             document.getElementById('welcomeScreen').classList.remove('hidden');
@@ -737,7 +763,7 @@
             }, 3000);
         }
 
-        // Fungsi untuk share ke WhatsApp
+        // Fungsi untuk share ke WhatsApp - VERSI LEBIH PENDEK
         function shareToWhatsApp() {
             const styleNames = {
                 visual: "Visual 🎨",
@@ -745,25 +771,15 @@
                 kinesthetic: "Kinestetik 🏃"
             };
             
-            // Ambil 3 kecerdasan teratas
-            const topIntelligences = Object.entries(scores)
-                .filter(([key]) => !['visual', 'auditory', 'kinesthetic'].includes(key))
-                .sort(([,a], [,b]) => b - a)
-                .slice(0, 3)
-                .map(([key]) => intelligenceDefinitions[key].name);
-            
-            const message = `Saya baru saja mengikuti Kuis Gaya Belajar & Kecerdasan Majemuk Anak!
+            const message = `🔍 Hasil Kuis Gaya Belajar Anak:
 
-Hasil Gaya Belajar: ${styleNames[finalResult]}
+🎯 ${styleNames[finalResult]}
+⭐ ${topIntelligences.join(', ')}
 
-Kecerdasan Teratas:
-• ${topIntelligences[0]}
-• ${topIntelligences[1]} 
-• ${topIntelligences[2]}
+Cek kuisnya di:
+${window.location.href}
 
-Anak saya adalah pembelajar ${finalResult === 'visual' ? 'visual yang efektif belajar melalui gambar dan visualisasi' : finalResult === 'auditory' ? 'auditori yang efektif belajar melalui suara dan diskusi' : 'kinestetik yang efektif belajar melalui gerakan dan praktik langsung'}.
-
-Coba kuisnya di: ${window.location.href}`;
+#GayaBelajar #Parenting`;
 
             const encodedMessage = encodeURIComponent(message);
             window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
@@ -771,11 +787,23 @@ Coba kuisnya di: ${window.location.href}`;
 
         // Fungsi untuk share ke Status WhatsApp
         function shareToWhatsAppStatus() {
-            showToast("Untuk share ke Status WA, buka WhatsApp → Status → share dari galeri");
-            shareToWhatsApp();
+            showToast("Buka WhatsApp → Status → share dari galeri (salin teks di atas)");
+            
+            // Salin teks ringkas ke clipboard
+            const styleNames = {
+                visual: "Visual 🎨",
+                auditory: "Auditori 🎵", 
+                kinesthetic: "Kinestetik 🏃"
+            };
+            
+            const message = `Anak saya: ${styleNames[finalResult]} 
+Kecerdasan: ${topIntelligences.join(', ')}
+${window.location.href}`;
+            
+            copyToClipboard(message);
         }
 
-        // Fungsi untuk share ke Instagram
+        // Fungsi untuk share ke Instagram - VERSI LEBIH PENDEK
         function shareToInstagram() {
             const styleNames = {
                 visual: "Visual 🎨",
@@ -783,33 +811,20 @@ Coba kuisnya di: ${window.location.href}`;
                 kinesthetic: "Kinestetik 🏃"
             };
             
-            const topIntelligences = Object.entries(scores)
-                .filter(([key]) => !['visual', 'auditory', 'kinesthetic'].includes(key))
-                .sort(([,a], [,b]) => b - a)
-                .slice(0, 2)
-                .map(([key]) => intelligenceDefinitions[key].name);
-            
-            const message = `Anak saya adalah Pembelajar ${styleNames[finalResult]}! 
-            
-Hasil dari Kuis Gaya Belajar & Kecerdasan Majemuk. 
-Kecerdasan teratas: ${topIntelligences.join(' & ')}
+            const message = `✨ Hasil Kuis Gaya Belajar ✨
 
-Setiap anak unik dengan cara belajar yang berbeda! ✨
+Anak saya: ${styleNames[finalResult]}
+Kecerdasan teratas: ${topIntelligences.join(', ')}
 
-#GayaBelajar #KecerdasanMajemuk #Parenting #EdukasiAnak`;
+Link: ${window.location.href}
 
-            showToast("Salin teks hasil dan tempel di Instagram Story!");
-            
-            // Copy teks ke clipboard
-            const textArea = document.createElement('textarea');
-            textArea.value = message;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
+#GayaBelajar #KecerdasanMajemuk #EdukasiAnak`;
+
+            showToast("Teks hasil sudah disalin! Tempel di Instagram Story");
+            copyToClipboard(message);
         }
 
-        // Fungsi untuk copy hasil
+        // Fungsi untuk copy hasil - VERSI LEBIH PENDEK
         function copyResults() {
             const styleNames = {
                 visual: "Visual 🎨",
@@ -817,31 +832,25 @@ Setiap anak unik dengan cara belajar yang berbeda! ✨
                 kinesthetic: "Kinestetik 🏃"
             };
             
-            const topIntelligences = Object.entries(scores)
-                .filter(([key]) => !['visual', 'auditory', 'kinesthetic'].includes(key))
-                .sort(([,a], [,b]) => b - a)
-                .slice(0, 5)
-                .map(([key, value]) => `${intelligenceDefinitions[key].name}: ${value}%`);
-            
-            const resultText = `HASIL KUIS GAYA BELAJAR & KECERDASAN MAJEMUK
+            const resultText = `HASIL KUIS GAYA BELAJAR
 
-Gaya Belajar Dominan: ${styleNames[finalResult]}
+Gaya Belajar: ${styleNames[finalResult]}
+Kecerdasan Teratas: ${topIntelligences.join(', ')}
 
-Profil Kecerdasan Majemuk:
-${topIntelligences.join('\n')}
+Link: ${window.location.href}`;
 
-${finalResult === 'visual' ? 'Tips: Gunakan gambar, diagram, warna, video edukasi, mind map, dan flashcard berwarna.' : finalResult === 'auditory' ? 'Tips: Gunakan audio, diskusi, lagu, baca keras, dan grup belajar.' : 'Tips: Lakukan eksperimen, gunakan benda fisik, izinkan bergerak, role-play, dan aktivitas fisik.'}
+            copyToClipboard(resultText);
+        }
 
-Coba kuisnya di: ${window.location.href}`;
-
+        // Fungsi helper untuk copy ke clipboard
+        function copyToClipboard(text) {
             const textArea = document.createElement('textarea');
-            textArea.value = resultText;
+            textArea.value = text;
             document.body.appendChild(textArea);
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
-            
-            showToast('Hasil berhasil disalin ke clipboard!');
+            showToast('Teks berhasil disalin!');
         }
     </script>
 </body>
