@@ -1,1 +1,1404 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Edukasi Anak Indonesia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6ecbf5 0%, #059ee3 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+            font-family: 'Nunito', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Halaman Awal */
+        .welcome-screen {
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .welcome-title {
+            color: #ff6b6b;
+            font-size: 4rem;
+            text-shadow: 4px 4px 0 #fff, 6px 6px 0 rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            font-family: 'Fredoka One', cursive;
+            letter-spacing: 3px;
+            line-height: 1.2;
+        }
+
+        .welcome-subtitle {
+            color: #fff;
+            font-size: 1.8rem;
+            margin-bottom: 50px;
+            font-family: 'Comic Neue', cursive;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .start-button {
+            background: linear-gradient(145deg, #4cd964, #3cb853);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 25px 60px;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.4s;
+            box-shadow: 0 10px 0 #2fa84e, 0 15px 20px rgba(0,0,0,0.3);
+            font-family: 'Fredoka One', cursive;
+            font-weight: bold;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-button:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 0 #2fa84e, 0 20px 25px rgba(0,0,0,0.4);
+        }
+
+        .start-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 5px 0 #2fa84e, 0 8px 10px rgba(0,0,0,0.3);
+        }
+
+        .start-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+        }
+
+        .start-button:hover::after {
+            left: 100%;
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            width: 200px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border: 4px solid #ffd166;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #5a67d8;
+        }
+
+        .feature-text {
+            font-size: 1.1rem;
+            color: #333;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.7;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .element-1 { top: 10%; left: 10%; animation-delay: 0s; color: #ff6b6b; }
+        .element-2 { top: 20%; right: 15%; animation-delay: 1s; color: #4cd964; }
+        .element-3 { bottom: 30%; left: 15%; animation-delay: 2s; color: #5a67d8; }
+        .element-4 { bottom: 20%; right: 10%; animation-delay: 3s; color: #ffd166; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Halaman Game (tersembunyi awalnya) */
+        .game-screen {
+            display: none;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #ff6b6b;
+            font-size: 3rem;
+            text-shadow: 3px 3px 0 #fff, 5px 5px 0 rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+            font-family: 'Fredoka One', cursive;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #fff;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            font-family: 'Comic Neue', cursive;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border: 8px solid #ffd166;
+        }
+
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .menu-btn {
+            background: linear-gradient(145deg, #4cd964, #3cb853);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 0 #2fa84e;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+            min-width: 160px;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 0 #2fa84e;
+        }
+
+        .menu-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #2fa84e;
+        }
+
+        .animal-categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        .animal-cat-btn {
+            background: linear-gradient(145deg, #ff9800, #f57c00);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 0 #e65100;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+        }
+
+        .animal-cat-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 0 #e65100;
+        }
+
+        .animal-cat-btn.active {
+            background: linear-gradient(145deg, #ff6b6b, #ff4757);
+            box-shadow: 0 4px 0 #ff3838;
+        }
+
+        .game-container {
+            display: none;
+            width: 100%;
+            text-align: center;
+        }
+
+        .game-title {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+            font-family: 'Fredoka One', cursive;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+        }
+
+        .word-display {
+            font-size: 3rem;
+            letter-spacing: 12px;
+            margin: 25px 0;
+            color: #333;
+            font-weight: bold;
+            font-family: 'Fredoka One', cursive;
+            background: linear-gradient(45deg, #ff6b6b, #5a67d8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 10px;
+        }
+
+        .hint {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #555;
+            font-family: 'Comic Neue', cursive;
+            background-color: #e9f7fe;
+            padding: 12px 20px;
+            border-radius: 15px;
+            display: inline-block;
+            border-left: 5px solid #5a67d8;
+        }
+
+        .animal-type {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #fff;
+            font-family: 'Comic Neue', cursive;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .carnivore {
+            background: linear-gradient(145deg, #ff6b6b, #ff4757);
+        }
+
+        .herbivore {
+            background: linear-gradient(145deg, #4cd964, #2ecc71);
+        }
+
+        .omnivore {
+            background: linear-gradient(145deg, #ffa502, #ff7f00);
+        }
+
+        .letters {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .letter {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(145deg, #ffd166, #e6b850);
+            border: none;
+            border-radius: 12px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #e6b850;
+            transition: all 0.2s;
+            font-family: 'Fredoka One', cursive;
+        }
+
+        .letter:hover {
+            background: linear-gradient(145deg, #ffc145, #d9a846);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 0 #e6b850;
+        }
+
+        .letter:disabled {
+            background: #cccccc;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 0 #aaaaaa;
+        }
+
+        .result {
+            margin-top: 25px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 15px;
+            display: none;
+            font-family: 'Comic Neue', cursive;
+        }
+
+        .success {
+            background: linear-gradient(145deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border: 3px solid #28a745;
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .failure {
+            background: linear-gradient(145deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            border: 3px solid #dc3545;
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .next-btn {
+            background: linear-gradient(145deg, #5a67d8, #4c51bf);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            margin-top: 25px;
+            box-shadow: 0 6px 0 #4c51bf;
+            transition: all 0.3s;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 0 #4c51bf;
+        }
+
+        .score-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .score {
+            font-size: 1.5rem;
+            color: #333;
+            font-family: 'Fredoka One', cursive;
+            background: linear-gradient(45deg, #ff6b6b, #5a67d8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 8px 15px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .score-progress {
+            width: 150px;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .score-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4cd964, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .education-box {
+            background: linear-gradient(145deg, #e9f7fe, #d4f0fd);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 8px solid #5a67d8;
+            display: none;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .education-title {
+            color: #5a67d8;
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            font-family: 'Fredoka One', cursive;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+        }
+
+        .education-content {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #333;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .fun-fact {
+            display: inline-block;
+            background-color: #ffd166;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 10px;
+            margin: 5px 0;
+            font-weight: bold;
+            font-family: 'Comic Neue', cursive;
+        }
+
+        .help-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: linear-gradient(145deg, #fff9c4, #fff59d);
+            border-radius: 15px;
+            border: 3px dashed #ffd166;
+        }
+
+        .help-btn {
+            background: linear-gradient(145deg, #ff9800, #f57c00);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 5px;
+            box-shadow: 0 4px 0 #e65100;
+            transition: all 0.3s;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+        }
+
+        .help-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 0 #e65100;
+        }
+
+        .help-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 0 #e65100;
+        }
+
+        .auto-reveal {
+            background: linear-gradient(145deg, #9c27b0, #7b1fa2);
+            color: white;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #f00;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        .auto-reveal-animation {
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .milestone-celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, #ffd166, #ffc145);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            z-index: 1000;
+            display: none;
+            border: 5px solid #ff6b6b;
+        }
+
+        .milestone-text {
+            font-size: 2rem;
+            font-family: 'Fredoka One', cursive;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .milestone-close {
+            background: linear-gradient(145deg, #5a67d8, #4c51bf);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: white;
+            font-size: 1rem;
+            font-family: 'Comic Neue', cursive;
+        }
+
+        @media (max-width: 600px) {
+            .welcome-title {
+                font-size: 2.5rem;
+            }
+            
+            .welcome-subtitle {
+                font-size: 1.3rem;
+            }
+            
+            .start-button {
+                font-size: 2rem;
+                padding: 20px 40px;
+            }
+            
+            .features {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .feature {
+                width: 90%;
+                max-width: 250px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .word-display {
+                font-size: 2.2rem;
+                letter-spacing: 8px;
+            }
+            
+            .letter {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+            
+            .menu-btn {
+                min-width: 130px;
+                font-size: 1.1rem;
+                padding: 12px 20px;
+            }
+            
+            .animal-cat-btn {
+                font-size: 1rem;
+                padding: 10px 15px;
+            }
+            
+            .score-progress {
+                width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Elements (Emoticon yang terbang) -->
+    <div class="floating-elements">
+        <div class="floating-element element-1">🐶</div>
+        <div class="floating-element element-2">🍎</div>
+        <div class="floating-element element-3">🎨</div>
+        <div class="floating-element element-4">🔢</div>
+    </div>
+
+    <!-- Halaman Awal -->
+    <div class="welcome-screen" id="welcome-screen">
+        <h1 class="welcome-title">GAME EDUKASI ANAK INDONESIA</h1>
+        <p class="welcome-subtitle">Belajar sambil bermain dengan cara yang menyenangkan!</p>
+        
+        <button class="start-button" onclick="startGame()">MULAI</button>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-text">Tebak Kata Menarik</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📚</div>
+                <div class="feature-text">Fakta Edukasi</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🏆</div>
+                <div class="feature-text">Sistem Skor</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎮</div>
+                <div class="feature-text">Interaktif</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Halaman Game -->
+    <div class="game-screen" id="game-screen">
+        <header>
+            <h1>Edukasi Anak Interaktif</h1>
+            <p class="subtitle">Aplikasi Tebak Kata Bahasa Indonesia</p>
+        </header>
+
+        <div class="container">
+            <div class="menu">
+                <button class="menu-btn" onclick="startGameCategory('hewan')">Hewan</button>
+                <button class="menu-btn" onclick="startGameCategory('buah')">Buah-buahan</button>
+                <button class="menu-btn" onclick="startGameCategory('warna')">Warna</button>
+                <button class="menu-btn" onclick="startGameCategory('angka')">Angka</button>
+                <button class="menu-btn" onclick="startGameCategory('benda')">Benda Sekitar</button>
+            </div>
+
+            <div id="animal-categories" class="animal-categories" style="display: none;">
+                <button class="animal-cat-btn active" onclick="selectAnimalCategory('all')">Semua Hewan</button>
+                <button class="animal-cat-btn" onclick="selectAnimalCategory('karnivora')">Karnivora</button>
+                <button class="animal-cat-btn" onclick="selectAnimalCategory('herbivora')">Herbivora</button>
+                <button class="animal-cat-btn" onclick="selectAnimalCategory('omnivora')">Omnivora</button>
+            </div>
+
+            <div id="game-container" class="game-container">
+                <h2 class="game-title" id="game-title">Tebak Kata</h2>
+                <div class="word-display" id="word-display"></div>
+                <p class="hint" id="hint">Petunjuk: </p>
+                <div class="animal-type" id="animal-type"></div>
+                
+                <div class="help-section">
+                    <p style="margin-bottom: 10px; font-family: 'Comic Neue', cursive; font-size: 1.2rem;">Butuh bantuan?</p>
+                    <button class="help-btn" onclick="revealOneLetter()">Buka 1 Huruf</button>
+                    <button class="help-btn auto-reveal" onclick="toggleAutoReveal()" id="auto-reveal-btn">Auto Tebak: OFF</button>
+                </div>
+                
+                <div class="letters" id="letters"></div>
+                <div class="education-box" id="education-box">
+                    <h3 class="education-title">Fakta Menarik</h3>
+                    <p class="education-content" id="education-content"></p>
+                </div>
+                <div class="result" id="result"></div>
+                <button class="next-btn" id="next-btn" onclick="nextWord()">Kata Selanjutnya</button>
+                
+                <div class="score-container">
+                    <div class="score" id="score">Skor: 0/1000</div>
+                    <div class="score-progress">
+                        <div class="score-bar" id="score-bar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="celebration" id="celebration"></div>
+
+        <div class="milestone-celebration" id="milestone-celebration">
+            <div class="milestone-text" id="milestone-text"></div>
+            <button class="milestone-close" onclick="closeMilestone()">Lanjutkan</button>
+        </div>
+
+        <footer>
+            <p>Aplikasi Edukasi Anak Interaktif</p>
+        </footer>
+    </div>
+
+    <script>
+        // Data kata untuk setiap kategori dengan edukasi tambahan yang lebih menarik
+        const wordData = {
+            hewan: {
+                karnivora: [
+                    { 
+                        word: "SINGA", 
+                        hint: "Raja hutan yang berburu dalam kelompok",
+                        type: "karnivora",
+                        education: "<span class='fun-fact'>Fakta Seru</span> Singa adalah <strong>kucing besar satu-satunya yang hidup berkelompok</strong>! Singa jantan memiliki surai yang lebat untuk melindungi lehernya saat bertarung. Mereka bisa tidur <strong>20 jam sehari</strong> untuk menghemat energi!"
+                    },
+                    { 
+                        word: "HARIMAU", 
+                        hint: "Kucing besar dengan loreng di tubuhnya",
+                        type: "karnivora",
+                        education: "<span class='fun-fact'>Wow Keren</span> Harimau adalah <strong>kucing terbesar di dunia</strong>! Setiap harimau memiliki pola loreng yang unik, seperti <strong>sidik jari manusia</strong>. Mereka adalah perenang yang handal dan suka berendam di air!"
+                    },
+                    { 
+                        word: "SERIGALA", 
+                        hint: "Hewan yang berburu dalam kelompok dan melolong",
+                        type: "karnivora",
+                        education: "<span class='fun-fact'>Unik Banget</span> Serigala berkomunikasi dengan <strong>lolongan yang bisa terdengar hingga 16 km</strong>! Mereka hidup dalam kelompok keluarga yang disebut <strong>pack</strong>. Serigala bisa berlari <strong>65 km per jam</strong> saat memburu mangsa!"
+                    },
+                    { 
+                        word: "BUAYA", 
+                        hint: "Reptil besar yang hidup di air dan darat",
+                        type: "karnivora",
+                        education: "<span class='fun-fact'>Menakjubkan</span> Buaya sudah ada sejak <strong>zaman dinosaurus</strong>! Mereka bisa menahan napas di dalam air selama <strong>1 jam</strong>. Gigi buaya yang patah akan tumbuh kembali - mereka bisa memiliki <strong>3.000 gigi seumur hidup</strong>!"
+                    },
+                    { 
+                        word: "ELANG", 
+                        hint: "Burung pemangsa dengan penglihatan tajam",
+                        type: "karnivora",
+                        education: "<span class='fun-fact'>Luar Biasa</span> Elang memiliki <strong>penglihatan 8 kali lebih tajam</strong> daripada manusia! Mereka bisa melihat mangsa dari ketinggian <strong>3 km</strong>. Elang membangun sarang terbesar di dunia - ada yang beratnya <strong>1 ton</strong>!"
+                    }
+                ],
+                herbivora: [
+                    { 
+                        word: "GAJAH", 
+                        hint: "Hewan darat terbesar dengan belalai panjang",
+                        type: "herbivora",
+                        education: "<span class='fun-fact'>Fakta Seru</span> Gajah adalah <strong>mamalia darat terbesar</strong> di dunia! Belalainya memiliki <strong>40.000 otot</strong> dan bisa mengangkat benda seberat 300 kg. Gajah berkomunikasi dengan suara <strong>infrasonik yang tidak bisa didengar manusia</strong>!"
+                    },
+                    { 
+                        word: "KUDA", 
+                        hint: "Hewan yang bisa berlari cepat dan ditunggangi",
+                        type: "herbivora",
+                        education: "<span class='fun-fact'>Wah Hebat</span> Kuda bisa tidur <strong>sambil berdiri</strong>! Mereka memiliki penglihatan hampir <strong>360 derajat</strong>. Kuda tercepat di dunia bisa berlari <strong>88 km per jam</strong>. Gigi kuda terus tumbuh sepanjang hidupnya!"
+                    },
+                    { 
+                        word: "KELINCI", 
+                        hint: "Hewan kecil dengan telinga panjang dan lompatan jauh",
+                        type: "herbivora",
+                        education: "<span class='fun-fact'>Unik Banget</span> Kelinci bisa <strong>memutar telinga 270 derajat</strong> untuk mendengar dari segala arah! Mata mereka bisa melihat <strong>hampir 360 derajat</strong>. Kelinci bisa melompat setinggi <strong>90 cm dalam sekali lompatan</strong>!"
+                    },
+                    { 
+                        word: "SAPI", 
+                        hint: "Hewan ternak yang menghasilkan susu",
+                        type: "herbivora",
+                        education: "<span class='fun-fact'>Tahukah Kamu</span> Sapi memiliki <strong>4 bagian perut</strong> untuk mencerna rumput! Mereka bisa menghabiskan <strong>8 jam sehari untuk makan</strong>. Sapi adalah hewan sosial yang punya <strong>teman terdekat</strong> dalam kelompoknya!"
+                    },
+                    { 
+                        word: "ZEBRA", 
+                        hint: "Hewan seperti kuda dengan garis-garis hitam putih",
+                        type: "herbivora",
+                        education: "<span class='fun-fact'>Menakjubkan</span> Setiap zebra memiliki <strong>pola garis yang unik</strong>, seperti sidik jari manusia! Garis-garis ini membantu <strong>mengusir lalat</strong> dan membingungkan pemangsa. Zebra tidur sambil berdiri dan selalu waspada!"
+                    }
+                ],
+                omnivora: [
+                    { 
+                        word: "BERUANG", 
+                        hint: "Hewan besar yang bisa memakan tumbuhan dan daging",
+                        type: "omnivora",
+                        education: "<span class='fun-fact'>Fakta Seru</span> Beruang bisa makan <strong>apa saja - dari buah, madu, sampai ikan</strong>! Mereka adalah perenang yang handal dan bisa berlari <strong>cepat seperti kuda</strong>. Beruang kutub sebenarnya memiliki <strong>kulit hitam dan bulu transparan</strong>!"
+                    },
+                    { 
+                        word: "MANUSIA", 
+                        hint: "Makhluk yang paling pintar di bumi",
+                        type: "omnivora",
+                        education: "<span class='fun-fact'>Wah Hebat</span> Manusia adalah <strong>makhluk paling cerdas</strong> di bumi! Otak manusia memiliki <strong>86 miliar sel saraf</strong>. Kita bisa belajar bahasa, membuat teknologi, dan menjelajah luar angkasa. Sungguh luar biasa!"
+                    },
+                    { 
+                        word: "BABI", 
+                        hint: "Hewan ternak yang sangat cerdas dan suka berkubang",
+                        type: "omnivora",
+                        education: "<span class='fun-fact'>Pintar Sekali</span> Babi adalah <strong>hewan yang sangat cerdas</strong>, bahkan lebih pintar dari anjing! Mereka memiliki <strong>ingatan yang baik</strong> dan bisa memecahkan masalah. Babi berkubang di lumpur untuk <strong>mendinginkan tubuhnya</strong>!"
+                    },
+                    { 
+                        word: "TIKUS", 
+                        hint: "Hewan pengerat kecil yang bisa makan apa saja",
+                        type: "omnivora",
+                        education: "<span class='fun-fact'>Unik Banget</span> Tikus bisa <strong>berenang selama 3 hari berturut-turut</strong>! Gigi mereka terus tumbuh, jadi harus selalu menggerogoti sesuatu. Tikus adalah hewan yang <strong>sangat sosial dan suka bermain</strong> dengan sesamanya!"
+                    },
+                    { 
+                        word: "AYAM", 
+                        hint: "Unggas yang menghasilkan telur dan bisa terbang pendek",
+                        type: "omnivora",
+                        education: "<span class='fun-fact'>Menakjubkan</span> Ayam memiliki <strong>ingatan yang baik</strong> dan bisa mengenali hingga 100 wajah! Mereka berkomunikasi dengan <strong>30 jenis suara berbeda</strong>. Ayam adalah keturunan langsung dari <strong>dinosaurus T-Rex</strong>!"
+                    }
+                ]
+            },
+            buah: [
+                { 
+                    word: "APEL", 
+                    hint: "Buah merah atau hijau yang renyah",
+                    education: "<span class='fun-fact'>Fakta Seru</span> Apel <strong>mengapung di air</strong> karena 25% dari buah ini adalah udara! Ada <strong>7.500 jenis apel</strong> berbeda di dunia. Pohon apel bisa tumbuh <strong>tinggi hingga 12 meter</strong> dan hidup sampai 100 tahun!"
+                },
+                { 
+                    word: "PISANG", 
+                    hint: "Buah kuning yang panjang",
+                    education: "<span class='fun-fact'>Wah Hebat</span> Pisang sebenarnya adalah <strong>buah beri menurut ilmu botani</strong>! Pohon pisang bukan pohon sebenarnya, melainkan <strong>tanaman herba terbesar di dunia</strong>. Pisang mengandung <strong>potasium yang membantu otot</strong> kita bekerja dengan baik!"
+                },
+                { 
+                    word: "JERUK", 
+                    hint: "Buah bulat berwarna oranye",
+                    education: "<span class='fun-fact'>Luar Biasa</span> Jeruk adalah <strong>sumber vitamin C terbaik</strong> yang membantu tubuh melawan penyakit! Satu pohon jeruk bisa menghasilkan <strong>500-600 buah setiap tahun</strong>. Brazil adalah <strong>produsen jeruk terbesar</strong> di dunia!"
+                },
+                { 
+                    word: "MANGGA", 
+                    hint: "Buah manis dengan biji besar",
+                    education: "<span class='fun-fact'>Wow Keren</span> Mangga disebut <strong>raja buah di India</strong> dan telah dibudidayakan selama <strong>4.000 tahun</strong>! Ada lebih dari <strong>1.000 jenis mangga</strong> di dunia. Pohon mangga bisa tumbuh <strong>sangat tinggi hingga 40 meter</strong>!"
+                },
+                { 
+                    word: "ANGGUR", 
+                    hint: "Buah kecil bergerombol",
+                    education: "<span class='fun-fact'>Unik Banget</span> Anggur tumbuh dalam kelompok yang disebut <strong>cluster atau tandan</strong>. Butuh <strong>2,5 kilogram anggur</strong> untuk membuat satu botol jus anggur 1 liter! Anggur tertua ditemukan sebagai <strong>fosil berusia 60 juta tahun</strong>!"
+                }
+            ],
+            warna: [
+                { 
+                    word: "MERAH", 
+                    hint: "Warna darah dan apel",
+                    education: "<span class='fun-fact'>Fakta Seru</span> Merah adalah <strong>warna pertama yang bisa dilihat bayi</strong>! Di lampu lalu lintas, merah berarti <strong>berhenti untuk keselamatan</strong>. Lebah tidak bisa melihat warna merah, tapi <strong>burung kolibri sangat suka warna merah</strong>!"
+                },
+                { 
+                    word: "BIRU", 
+                    hint: "Warna langit dan laut",
+                    education: "<span class='fun-fact'>Wah Hebat</span> Biru adalah <strong>warna favorit paling populer</strong> di seluruh dunia! Hanya <strong>10% bunga yang berwarna biru</strong> di alam. Di zaman Romawi kuno, warna biru dibuat dari <strong>batu permata lapis lazuli yang sangat mahal</strong>!"
+                },
+                { 
+                    word: "HIJAU", 
+                    hint: "Warna daun dan rumput",
+                    education: "<span class='fun-fact'>Luar Biasa</span> Hijau adalah warna yang <strong>paling mudah dilihat mata manusia</strong>! Di rumah sakit, warna hijau digunakan karena <strong>membuat pasien lebih tenang</strong>. Kamuflase tentara berwarna hijau untuk <strong>menyamar di hutan</strong>!"
+                }
+            ],
+            angka: [
+                { 
+                    word: "SATU", 
+                    hint: "Angka pertama",
+                    education: "<span class='fun-fact'>Fakta Seru</span> Angka 1 adalah <strong>angka yang paling sederhana</strong> dan dasar dari semua angka! Dalam matematika, angka 1 disebut <strong>identitas perkalian</strong> karena angka apapun dikali 1 hasilnya tetap. Banyak hal di alam yang tunggal seperti <strong>matahari dan bulan</strong>!"
+                },
+                { 
+                    word: "DUA", 
+                    hint: "Angka setelah satu",
+                    education: "<span class='fun-fact'>Wah Hebat</span> Banyak hal di dunia ini berpasangan, seperti <strong>mata, telinga, tangan, dan kaki kita</strong>! Dalam matematika, angka 2 adalah <strong>satu-satunya angka genap prima</strong>. Hari dibagi menjadi <strong>2 bagian: siang dan malam</strong>!"
+                },
+                { 
+                    word: "TIGA", 
+                    hint: "Angka setelah dua",
+                    education: "<span class='fun-fact'>Luar Biasa</span> Segitiga adalah bentuk dengan <strong>tiga sisi dan tiga sudut</strong> - bentuk paling kuat dalam arsitektur! Dalam cerita, sering ada <strong>tiga karakter atau tiga tantangan</strong>. Warna dasar ada <strong>tiga: merah, biru, dan kuning</strong>!"
+                }
+            ],
+            benda: [
+                { 
+                    word: "MEJA", 
+                    hint: "Furnitur untuk menaruh barang",
+                    education: "<span class='fun-fact'>Fakta Seru</span> Meja pertama kali digunakan oleh <strong>orang Mesir kuno sekitar 2500 tahun sebelum Masehi</strong>! Meja tertua yang ditemukan terbuat dari <strong>batu dan kayu</strong>. Ada meja dengan <strong>tinggi yang bisa diatur</strong> untuk belajar sambil berdiri!"
+                },
+                { 
+                    word: "KURSI", 
+                    hint: "Tempat duduk",
+                    education: "<span class='fun-fact'>Wah Hebat</span> Kursi tertua yang diketahui <strong>berusia lebih dari 5.000 tahun</strong> dan ditemukan di Mesir! Kursi malas (recliner) pertama dibuat untuk <strong>orang sakit yang butuh istirahat</strong>. Kursi roda membantu <strong>orang yang sulit berjalan</strong>!"
+                },
+                { 
+                    word: "BUKU", 
+                    hint: "Kumpulan kertas berisi tulisan",
+                    education: "<span class='fun-fact'>Luar Biasa</span> Buku pertama yang dicetak dengan mesin cetak adalah <strong>Alkitab Gutenberg pada tahun 1455</strong>! Perpustakaan terbesar di dunia ada di <strong>Washington DC dengan lebih dari 170 juta item</strong>. Membaca buku <strong>melatih otak dan imajinasi</strong>!"
+                }
+            ]
+        };
+
+        // Variabel game
+        let currentCategory = '';
+        let currentAnimalCategory = 'all';
+        let currentWord = '';
+        let currentHint = '';
+        let currentType = '';
+        let currentEducation = '';
+        let guessedLetters = [];
+        let wrongAttempts = 0;
+        let score = 0;
+        let currentWordIndex = 0;
+        let autoRevealEnabled = false;
+        let autoRevealInterval = null;
+        let currentAnimalWords = [];
+        let milestoneReached = false;
+
+        // Fungsi untuk memulai game dari halaman awal
+        function startGame() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+        }
+
+        // Fungsi untuk memulai game kategori
+        function startGameCategory(category) {
+            currentCategory = category;
+            currentWordIndex = 0;
+            score = 0;
+            updateScoreDisplay();
+            document.getElementById('game-title').textContent = 'Tebak Kata - ' + getCategoryName(category);
+            document.querySelector('.menu').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+            
+            if (category === 'hewan') {
+                document.getElementById('animal-categories').style.display = 'flex';
+                selectAnimalCategory('all');
+            } else {
+                document.getElementById('animal-categories').style.display = 'none';
+                nextWord();
+            }
+            
+            stopAutoReveal();
+        }
+
+        // Fungsi untuk memilih kategori hewan
+        function selectAnimalCategory(animalCategory) {
+            currentAnimalCategory = animalCategory;
+            
+            const buttons = document.querySelectorAll('.animal-cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            currentWordIndex = 0;
+            score = 0;
+            updateScoreDisplay();
+            
+            if (animalCategory === 'all') {
+                currentAnimalWords = [
+                    ...wordData.hewan.karnivora,
+                    ...wordData.hewan.herbivora,
+                    ...wordData.hewan.omnivora
+                ];
+            } else {
+                currentAnimalWords = wordData.hewan[animalCategory];
+            }
+            
+            currentAnimalWords = shuffleArray(currentAnimalWords);
+            nextWord();
+        }
+
+        // Fungsi untuk mengacak array
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Fungsi untuk mendapatkan nama kategori
+        function getCategoryName(category) {
+            const names = {
+                hewan: 'Hewan',
+                buah: 'Buah-buahan',
+                warna: 'Warna',
+                angka: 'Angka',
+                benda: 'Benda Sekitar'
+            };
+            return names[category];
+        }
+
+        // Fungsi untuk memuat kata berikutnya
+        function nextWord() {
+            let wordObj;
+            
+            if (currentCategory === 'hewan') {
+                if (currentWordIndex < currentAnimalWords.length) {
+                    wordObj = currentAnimalWords[currentWordIndex];
+                } else {
+                    endGame();
+                    return;
+                }
+            } else {
+                if (currentWordIndex < wordData[currentCategory].length) {
+                    wordObj = wordData[currentCategory][currentWordIndex];
+                } else {
+                    endGame();
+                    return;
+                }
+            }
+            
+            currentWord = wordObj.word;
+            currentHint = wordObj.hint;
+            currentEducation = wordObj.education;
+            currentType = wordObj.type || '';
+            guessedLetters = [];
+            wrongAttempts = 0;
+            
+            displayWord();
+            displayHint();
+            displayAnimalType();
+            displayLetters();
+            hideResult();
+            hideEducation();
+            document.getElementById('next-btn').style.display = 'none';
+            
+            currentWordIndex++;
+            
+            if (autoRevealEnabled) {
+                startAutoReveal();
+            }
+        }
+
+        // Fungsi untuk menampilkan jenis hewan
+        function displayAnimalType() {
+            const animalTypeElement = document.getElementById('animal-type');
+            
+            if (currentType) {
+                let typeText = '';
+                let typeClass = '';
+                
+                switch(currentType) {
+                    case 'karnivora':
+                        typeText = 'HEWAN KARNIVORA (Pemakan Daging)';
+                        typeClass = 'carnivore';
+                        break;
+                    case 'herbivora':
+                        typeText = 'HEWAN HERBIVORA (Pemakan Tumbuhan)';
+                        typeClass = 'herbivore';
+                        break;
+                    case 'omnivora':
+                        typeText = 'HEWAN OMNIVORA (Pemakan Segala)';
+                        typeClass = 'omnivore';
+                        break;
+                }
+                
+                animalTypeElement.textContent = typeText;
+                animalTypeElement.className = `animal-type ${typeClass}`;
+                animalTypeElement.style.display = 'inline-block';
+            } else {
+                animalTypeElement.style.display = 'none';
+            }
+        }
+
+        // Fungsi untuk mengakhiri game
+        function endGame() {
+            document.getElementById('game-container').style.display = 'none';
+            document.querySelector('.menu').style.display = 'flex';
+            if (currentCategory === 'hewan') {
+                document.getElementById('animal-categories').style.display = 'none';
+            }
+            playSound('win');
+            createConfetti();
+            setTimeout(() => {
+                alert(`Selamat! Anda telah menyelesaikan semua kata dalam kategori ${getCategoryName(currentCategory)}. Skor akhir: ${score}/1000`);
+            }, 1000);
+        }
+
+        // Fungsi untuk menampilkan kata dengan garis bawah
+        function displayWord() {
+            const wordDisplay = document.getElementById('word-display');
+            let display = '';
+            
+            for (let letter of currentWord) {
+                if (guessedLetters.includes(letter)) {
+                    display += letter + ' ';
+                } else {
+                    display += '_ ';
+                }
+            }
+            
+            wordDisplay.textContent = display;
+        }
+
+        // Fungsi untuk menampilkan petunjuk
+        function displayHint() {
+            document.getElementById('hint').textContent = `Petunjuk: ${currentHint}`;
+        }
+
+        // Fungsi untuk menampilkan tombol huruf
+        function displayLetters() {
+            const lettersContainer = document.getElementById('letters');
+            lettersContainer.innerHTML = '';
+            
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            
+            alphabet.forEach(letter => {
+                const button = document.createElement('button');
+                button.textContent = letter;
+                button.className = 'letter';
+                button.onclick = () => guessLetter(letter);
+                lettersContainer.appendChild(button);
+            });
+        }
+
+        // Fungsi untuk menebak huruf
+        function guessLetter(letter) {
+            if (guessedLetters.includes(letter)) return;
+            
+            guessedLetters.push(letter);
+            
+            const letterButtons = document.getElementsByClassName('letter');
+            for (let btn of letterButtons) {
+                if (btn.textContent === letter) {
+                    btn.disabled = true;
+                    break;
+                }
+            }
+            
+            if (currentWord.includes(letter)) {
+                playSound('correct');
+                displayWord();
+                
+                if (isWordComplete()) {
+                    showResult(true);
+                    score += 10;
+                    updateScoreDisplay();
+                    checkMilestones();
+                    
+                    if (score >= 1000) {
+                        playSound('excellent');
+                    } else if (score >= 500) {
+                        playSound('great');
+                    } else if (score >= 100) {
+                        playSound('goodjob');
+                    }
+                    
+                    showEducation();
+                    stopAutoReveal();
+                }
+            } else {
+                playSound('wrong');
+                wrongAttempts++;
+                
+                if (wrongAttempts >= 5) {
+                    showResult(false);
+                    stopAutoReveal();
+                }
+            }
+        }
+
+        // Fungsi untuk memeriksa apakah kata sudah lengkap
+        function isWordComplete() {
+            for (let letter of currentWord) {
+                if (!guessedLetters.includes(letter)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Fungsi untuk menampilkan hasil
+        function showResult(isSuccess) {
+            const result = document.getElementById('result');
+            result.style.display = 'block';
+            
+            if (isSuccess) {
+                result.textContent = 'Selamat! Jawaban Anda benar!';
+                result.className = 'result success';
+            } else {
+                result.textContent = `Sayang sekali! Jawaban yang benar: ${currentWord}`;
+                result.className = 'result failure';
+            }
+            
+            document.getElementById('next-btn').style.display = 'block';
+            
+            const letterButtons = document.getElementsByClassName('letter');
+            for (let btn of letterButtons) {
+                btn.disabled = true;
+            }
+        }
+
+        // Fungsi untuk menyembunyikan hasil
+        function hideResult() {
+            document.getElementById('result').style.display = 'none';
+        }
+
+        // Fungsi untuk menampilkan edukasi
+        function showEducation() {
+            const educationBox = document.getElementById('education-box');
+            const educationContent = document.getElementById('education-content');
+            
+            educationContent.innerHTML = currentEducation;
+            educationBox.style.display = 'block';
+        }
+
+        // Fungsi untuk menyembunyikan edukasi
+        function hideEducation() {
+            document.getElementById('education-box').style.display = 'none';
+        }
+
+        // Fungsi untuk update score display
+        function updateScoreDisplay() {
+            document.getElementById('score').textContent = `Skor: ${score}/1000`;
+            const progress = (score / 1000) * 100;
+            document.getElementById('score-bar').style.width = `${progress}%`;
+        }
+
+        // Fungsi untuk memeriksa milestone
+        function checkMilestones() {
+            if (score === 100 && !milestoneReached) {
+                showMilestone("Luar Biasa! Kamu mencapai 100 poin!");
+                milestoneReached = true;
+            } else if (score === 500 && milestoneReached) {
+                showMilestone("Fantastis! Kamu mencapai 500 poin!");
+            } else if (score === 1000) {
+                showMilestone("SEMPURNA! Kamu mencapai 1000 poin! Kamu adalah juara!");
+            }
+        }
+
+        // Fungsi untuk menampilkan milestone
+        function showMilestone(message) {
+            document.getElementById('milestone-text').textContent = message;
+            document.getElementById('milestone-celebration').style.display = 'block';
+            createConfetti();
+            playSound('excellent');
+        }
+
+        // Fungsi untuk menutup milestone
+        function closeMilestone() {
+            document.getElementById('milestone-celebration').style.display = 'none';
+        }
+
+        // Fungsi untuk memainkan suara
+        function playSound(type) {
+            const speech = new SpeechSynthesisUtterance();
+            speech.lang = 'id-ID';
+            speech.rate = 0.9;
+            speech.pitch = 1.2;
+            
+            switch(type) {
+                case 'correct':
+                    speech.text = 'Benar!';
+                    break;
+                case 'wrong':
+                    speech.text = 'Salah, coba lagi!';
+                    break;
+                case 'goodjob':
+                    speech.text = 'Kerja bagus! Kamu hebat!';
+                    break;
+                case 'great':
+                    speech.text = 'Luar biasa! Teruskan!';
+                    break;
+                case 'excellent':
+                    speech.text = 'Fantastis! Kamu jenius!';
+                    break;
+                case 'win':
+                    speech.text = 'Selamat! Kamu menyelesaikan semua level!';
+                    break;
+                case 'help':
+                    speech.text = 'Aku bantu kamu ya!';
+                    break;
+            }
+            
+            window.speechSynthesis.speak(speech);
+        }
+
+        // Fungsi untuk membuat konfeti
+        function createConfetti() {
+            const celebration = document.getElementById('celebration');
+            celebration.style.display = 'block';
+            
+            const colors = ['#ff6b6b', '#4cd964', '#5a67d8', '#ffd166', '#a663cc'];
+            
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.opacity = Math.random();
+                celebration.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+            
+            setTimeout(() => {
+                celebration.style.display = 'none';
+            }, 5000);
+        }
+
+        // ========== FITUR BANTUAN ==========
+
+        // Fungsi untuk membuka satu huruf secara acak
+        function revealOneLetter() {
+            const missingLetters = [];
+            
+            for (let letter of currentWord) {
+                if (!guessedLetters.includes(letter)) {
+                    missingLetters.push(letter);
+                }
+            }
+            
+            if (missingLetters.length > 0) {
+                const randomLetter = missingLetters[Math.floor(Math.random() * missingLetters.length)];
+                
+                const wordDisplay = document.getElementById('word-display');
+                wordDisplay.classList.add('auto-reveal-animation');
+                setTimeout(() => {
+                    wordDisplay.classList.remove('auto-reveal-animation');
+                }, 500);
+                
+                guessLetter(randomLetter);
+                playSound('help');
+            }
+        }
+
+        // Fungsi untuk mengaktifkan/menonaktifkan auto reveal
+        function toggleAutoReveal() {
+            autoRevealEnabled = !autoRevealEnabled;
+            const button = document.getElementById('auto-reveal-btn');
+            
+            if (autoRevealEnabled) {
+                button.textContent = 'Auto Tebak: ON';
+                button.style.background = 'linear-gradient(145deg, #4caf50, #388e3c)';
+                startAutoReveal();
+                playSound('help');
+            } else {
+                button.textContent = 'Auto Tebak: OFF';
+                button.style.background = 'linear-gradient(145deg, #9c27b0, #7b1fa2)';
+                stopAutoReveal();
+            }
+        }
+
+        // Fungsi untuk memulai auto reveal
+        function startAutoReveal() {
+            if (autoRevealEnabled && !isWordComplete()) {
+                stopAutoReveal();
+                
+                autoRevealInterval = setInterval(() => {
+                    if (!isWordComplete() && autoRevealEnabled) {
+                        revealOneLetter();
+                    } else {
+                        stopAutoReveal();
+                    }
+                }, 1500);
+            }
+        }
+
+        // Fungsi untuk menghentikan auto reveal
+        function stopAutoReveal() {
+            if (autoRevealInterval) {
+                clearInterval(autoRevealInterval);
+                autoRevealInterval = null;
+            }
+        }
+    </script>
+</body>
+</html>
