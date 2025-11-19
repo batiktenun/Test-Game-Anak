@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kuis Gaya Belajar & Kecerdasan Majemuk Anak</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -84,6 +85,10 @@
 
         .btn-copy {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         }
 
         .question {
@@ -267,6 +272,72 @@
             color: #333;
         }
 
+        .share-instruction {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 0.9em;
+            color: #0066cc;
+        }
+
+        /* Modal untuk preview gambar */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 90%;
+            max-height: 90%;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .visual { border-left: 4px solid #28a745; }
         .auditory { border-left: 4px solid #dc3545; }
         .kinesthetic { border-left: 4px solid #ffc107; }
@@ -295,6 +366,11 @@
 
             .intelligence-results {
                 grid-template-columns: 1fr;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+                align-items: center;
             }
         }
     </style>
@@ -340,19 +416,21 @@
             <div class="share-section">
                 <div class="share-title">Bagikan Hasil Ini</div>
                 <div class="share-buttons">
+                    <button class="btn share-btn btn-download" onclick="previewResultImage()">
+                        📸 Buat Gambar Hasil
+                    </button>
                     <button class="btn share-btn btn-whatsapp" onclick="shareToWhatsApp()">
-                        📱 WhatsApp
-                    </button>
-                    <button class="btn share-btn btn-whatsapp" onclick="shareToWhatsAppStatus()">
-                        📸 Status WA
-                    </button>
-                    <button class="btn share-btn btn-instagram" onclick="shareToInstagram()">
-                        📷 Instagram
-                    </button>
-                    <button class="btn share-btn btn-copy" onclick="copyResults()">
-                        📋 Copy Hasil
+                        📱 Share ke WhatsApp
                     </button>
                 </div>
+                
+                <div class="share-instruction">
+                    <strong>Cara Share:</strong><br>
+                    • Klik "Buat Gambar Hasil" untuk membuat gambar yang siap dibagikan<br>
+                    • Gambar akan muncul di layar dengan tombol share langsung<br>
+                    • Bisa langsung share ke WhatsApp atau screenshot untuk Instagram
+                </div>
+
                 <!-- Tampilkan URL untuk memudahkan copy manual -->
                 <div class="url-display" id="urlDisplay">
                     <strong>Link Kuis:</strong><br>
@@ -363,6 +441,43 @@
             <button class="btn" onclick="restartQuiz()">Ulangi Kuis</button>
         </div>
     </div>
+
+    <!-- Modal untuk Preview Gambar -->
+    <div id="previewModal" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closePreview()">×</button>
+            <h2>Gambar Hasil Siap Dibagikan!</h2>
+            <img id="previewImage" class="modal-image" src="" alt="Hasil Kuis">
+            <div class="modal-buttons">
+                <button class="btn btn-whatsapp" onclick="shareImageToWhatsApp()">
+                    📱 Share ke WhatsApp
+                </button>
+                <button class="btn btn-download" onclick="downloadImage()">
+                    💾 Download Gambar
+                </button>
+                <button class="btn" onclick="closePreview()">
+                    ✕ Tutup
+                </button>
+            </div>
+            <p style="margin-top: 15px; color: #666; font-size: 0.9em;">
+                Untuk Instagram: Screenshot gambar di atas atau download, lalu upload ke Instagram Story
+            </p>
+        </div>
+    </div>
+
+    <!-- Elemen tersembunyi untuk generate gambar -->
+    <div id="resultImage" class="hidden" style="
+        width: 1080px;
+        height: 1920px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 60px;
+        color: white;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    "></div>
 
     <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
@@ -470,39 +585,30 @@
 
         // Definisi kecerdasan majemuk
         const intelligenceDefinitions = {
-            visual: { name: "Visual", description: "Belajar melalui gambar dan penglihatan" },
-            auditory: { name: "Auditori", description: "Belajar melalui suara dan pendengaran" },
-            kinesthetic: { name: "Kinestetik", description: "Belajar melalui gerakan dan sentuhan" },
-            linguistic: { name: "Linguistik", description: "Cerdas dalam kata-kata dan bahasa" },
-            logical: { name: "Matematis-Logis", description: "Cerdas dalam angka dan logika" },
-            spatial: { name: "Spasial", description: "Cerdas dalam gambar dan ruang" },
-            bodily: { name: "Kinestetik-Tubuh", description: "Cerdas dalam gerakan tubuh" },
-            musical: { name: "Musikal", description: "Cerdas dalam musik dan irama" },
-            interpersonal: { name: "Interpersonal", description: "Cerdas dalam hubungan sosial" },
-            intrapersonal: { name: "Intrapersonal", description: "Cerdas memahami diri sendiri" },
-            naturalist: { name: "Naturalis", description: "Cerdas dalam memahami alam" }
+            visual: { name: "Visual", description: "Belajar melalui gambar dan penglihatan", emoji: "🎨" },
+            auditory: { name: "Auditori", description: "Belajar melalui suara dan pendengaran", emoji: "🎵" },
+            kinesthetic: { name: "Kinestetik", description: "Belajar melalui gerakan dan sentuhan", emoji: "🏃" },
+            linguistic: { name: "Linguistik", description: "Cerdas dalam kata-kata dan bahasa", emoji: "📚" },
+            logical: { name: "Matematis-Logis", description: "Cerdas dalam angka dan logika", emoji: "🔢" },
+            spatial: { name: "Spasial", description: "Cerdas dalam gambar dan ruang", emoji: "🗺️" },
+            bodily: { name: "Kinestetik-Tubuh", description: "Cerdas dalam gerakan tubuh", emoji: "💃" },
+            musical: { name: "Musikal", description: "Cerdas dalam musik dan irama", emoji: "🎵" },
+            interpersonal: { name: "Interpersonal", description: "Cerdas dalam hubungan sosial", emoji: "👥" },
+            intrapersonal: { name: "Intrapersonal", description: "Cerdas memahami diri sendiri", emoji: "🧠" },
+            naturalist: { name: "Naturalis", description: "Cerdas dalam memahami alam", emoji: "🌿" }
         };
 
-        // Variabel untuk melacak status kuis
+        // Variabel global
         let currentQuestionIndex = 0;
         let scores = {
-            // Gaya Belajar
-            visual: 0,
-            auditory: 0,
-            kinesthetic: 0,
-            // Kecerdasan Majemuk
-            linguistic: 0,
-            logical: 0,
-            spatial: 0,
-            bodily: 0,
-            musical: 0,
-            interpersonal: 0,
-            intrapersonal: 0,
-            naturalist: 0
+            visual: 0, auditory: 0, kinesthetic: 0,
+            linguistic: 0, logical: 0, spatial: 0, bodily: 0,
+            musical: 0, interpersonal: 0, intrapersonal: 0, naturalist: 0
         };
         let selectedOption = null;
         let finalResult = '';
         let topIntelligences = [];
+        let currentImageDataUrl = '';
 
         // Set URL saat halaman dimuat
         document.getElementById('currentUrl').textContent = window.location.href;
@@ -599,7 +705,7 @@
                 .filter(([key]) => !['visual', 'auditory', 'kinesthetic'].includes(key))
                 .sort(([,a], [,b]) => b - a)
                 .slice(0, 3)
-                .map(([key]) => intelligenceDefinitions[key].name);
+                .map(([key]) => intelligenceDefinitions[key]);
             
             // Tampilkan hasil berdasarkan gaya belajar dominan
             const resultContent = document.getElementById('resultContent');
@@ -763,6 +869,128 @@
             }, 3000);
         }
 
+        // Fungsi untuk membuat dan menampilkan preview gambar
+        function previewResultImage() {
+            showToast('Sedang membuat gambar...');
+            
+            const styleNames = {
+                visual: { name: "Visual", emoji: "🎨", color: "#28a745" },
+                auditory: { name: "Auditori", emoji: "🎵", color: "#dc3545" }, 
+                kinesthetic: { name: "Kinestetik", emoji: "🏃", color: "#ffc107" }
+            };
+
+            const resultImage = document.getElementById('resultImage');
+            resultImage.innerHTML = '';
+            
+            // Set background gradient berdasarkan gaya belajar
+            resultImage.style.background = finalResult === 'visual' 
+                ? 'linear-gradient(135deg, #28a745 0%, #20c997 100%)'
+                : finalResult === 'auditory'
+                ? 'linear-gradient(135deg, #dc3545 0%, #e83e8c 100%)'
+                : 'linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)';
+
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: white;
+                border-radius: 40px;
+                padding: 60px;
+                color: #333;
+                text-align: center;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                max-width: 900px;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            `;
+            
+            content.innerHTML = `
+                <div style="font-size: 4em; margin-bottom: 40px; color: #333; font-weight: bold;">
+                    Hasil Kuis Gaya Belajar
+                </div>
+                <div style="font-size: 8em; margin: 40px 0;">
+                    ${styleNames[finalResult].emoji}
+                </div>
+                <div style="font-size: 5em; margin: 30px 0; font-weight: bold; color: ${styleNames[finalResult].color}">
+                    ${styleNames[finalResult].name}
+                </div>
+                <div style="font-size: 3em; margin: 40px 0; line-height: 1.5;">
+                    <strong>Kecerdasan Teratas:</strong><br>
+                    ${topIntelligences.map(intel => `${intel.emoji} ${intel.name}`).join('<br>')}
+                </div>
+                <div style="font-size: 2em; margin-top: 60px; color: #667eea;">
+                    ${window.location.href}
+                </div>
+            `;
+            
+            resultImage.appendChild(content);
+
+            // Gunakan html2canvas untuk konversi ke gambar
+            html2canvas(resultImage, {
+                scale: 2,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                currentImageDataUrl = canvas.toDataURL('image/png');
+                
+                // Tampilkan gambar di modal
+                document.getElementById('previewImage').src = currentImageDataUrl;
+                document.getElementById('previewModal').classList.remove('hidden');
+                
+                showToast('Gambar siap dibagikan!');
+            }).catch(error => {
+                console.error('Error generating image:', error);
+                showToast('Error membuat gambar. Coba lagi.');
+            });
+        }
+
+        // Fungsi untuk menutup preview
+        function closePreview() {
+            document.getElementById('previewModal').classList.add('hidden');
+        }
+
+        // Fungsi untuk share gambar ke WhatsApp
+        function shareImageToWhatsApp() {
+            if (!currentImageDataUrl) {
+                showToast('Buat gambar terlebih dahulu!');
+                return;
+            }
+
+            // Convert data URL to blob
+            fetch(currentImageDataUrl)
+                .then(res => res.blob())
+                .then(blob => {
+                    // Create form data
+                    const formData = new FormData();
+                    formData.append('file', blob, 'hasil-kuis.png');
+                    
+                    // Untuk WhatsApp, kita tidak bisa langsung share gambar via web
+                    // Jadi kita beri instruksi
+                    showToast('Untuk share gambar: Download dulu, lalu share dari galeri');
+                })
+                .catch(error => {
+                    console.error('Error sharing image:', error);
+                    showToast('Error sharing gambar');
+                });
+        }
+
+        // Fungsi untuk download gambar
+        function downloadImage() {
+            if (!currentImageDataUrl) {
+                showToast('Buat gambar terlebih dahulu!');
+                return;
+            }
+
+            const a = document.createElement('a');
+            a.href = currentImageDataUrl;
+            a.download = `hasil-kuis-gaya-belajar-${finalResult}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            showToast('Gambar berhasil diunduh!');
+        }
+
         // Fungsi untuk share ke WhatsApp - VERSI LEBIH PENDEK
         function shareToWhatsApp() {
             const styleNames = {
@@ -774,7 +1002,7 @@
             const message = `🔍 Hasil Kuis Gaya Belajar Anak:
 
 🎯 ${styleNames[finalResult]}
-⭐ ${topIntelligences.join(', ')}
+⭐ ${topIntelligences.map(intel => intel.name).join(', ')}
 
 Cek kuisnya di:
 ${window.location.href}
@@ -783,63 +1011,6 @@ ${window.location.href}
 
             const encodedMessage = encodeURIComponent(message);
             window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
-        }
-
-        // Fungsi untuk share ke Status WhatsApp
-        function shareToWhatsAppStatus() {
-            showToast("Buka WhatsApp → Status → share dari galeri (salin teks di atas)");
-            
-            // Salin teks ringkas ke clipboard
-            const styleNames = {
-                visual: "Visual 🎨",
-                auditory: "Auditori 🎵", 
-                kinesthetic: "Kinestetik 🏃"
-            };
-            
-            const message = `Anak saya: ${styleNames[finalResult]} 
-Kecerdasan: ${topIntelligences.join(', ')}
-${window.location.href}`;
-            
-            copyToClipboard(message);
-        }
-
-        // Fungsi untuk share ke Instagram - VERSI LEBIH PENDEK
-        function shareToInstagram() {
-            const styleNames = {
-                visual: "Visual 🎨",
-                auditory: "Auditori 🎵",
-                kinesthetic: "Kinestetik 🏃"
-            };
-            
-            const message = `✨ Hasil Kuis Gaya Belajar ✨
-
-Anak saya: ${styleNames[finalResult]}
-Kecerdasan teratas: ${topIntelligences.join(', ')}
-
-Link: ${window.location.href}
-
-#GayaBelajar #KecerdasanMajemuk #EdukasiAnak`;
-
-            showToast("Teks hasil sudah disalin! Tempel di Instagram Story");
-            copyToClipboard(message);
-        }
-
-        // Fungsi untuk copy hasil - VERSI LEBIH PENDEK
-        function copyResults() {
-            const styleNames = {
-                visual: "Visual 🎨",
-                auditory: "Auditori 🎵",
-                kinesthetic: "Kinestetik 🏃"
-            };
-            
-            const resultText = `HASIL KUIS GAYA BELAJAR
-
-Gaya Belajar: ${styleNames[finalResult]}
-Kecerdasan Teratas: ${topIntelligences.join(', ')}
-
-Link: ${window.location.href}`;
-
-            copyToClipboard(resultText);
         }
 
         // Fungsi helper untuk copy ke clipboard
