@@ -6,7 +6,6 @@
     <title>Kuis Gaya Belajar & Kecerdasan Majemuk Anak</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* Reset dan base styles */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -23,7 +22,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            min-height: 100dvh; /* Untuk browser modern */
+            min-height: 100dvh;
             display: grid;
             place-items: center;
             padding: 0;
@@ -31,7 +30,6 @@
             width: 100%;
         }
 
-        /* Container utama */
         .main-container {
             display: grid;
             place-items: center;
@@ -51,7 +49,6 @@
             margin: 0 auto;
         }
 
-        /* Typography */
         h1 {
             color: #333;
             text-align: center;
@@ -74,7 +71,6 @@
             text-align: center;
         }
 
-        /* Buttons */
         .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -108,7 +104,6 @@
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         }
 
-        /* Screens */
         .welcome-screen, .question-screen, .result-screen {
             display: flex;
             flex-direction: column;
@@ -118,7 +113,6 @@
             text-align: center;
         }
 
-        /* Question styles */
         .question {
             font-size: clamp(1.2rem, 3vw, 1.4rem);
             color: #333;
@@ -161,7 +155,6 @@
             border-color: #667eea;
         }
 
-        /* Progress bar */
         .progress-bar {
             background: #e9ecef;
             border-radius: 10px;
@@ -178,7 +171,6 @@
             transition: width 0.5s;
         }
 
-        /* Result cards */
         .result-card {
             background: #f8f9fa;
             border-radius: 15px;
@@ -202,7 +194,6 @@
             font-size: clamp(0.95rem, 2.5vw, 1.05rem);
         }
 
-        /* Intelligence results */
         .intelligence-results {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
@@ -247,7 +238,6 @@
             color: #666;
         }
 
-        /* Tips */
         .tips {
             background: #fff3cd;
             border-left: 4px solid #ffc107;
@@ -265,7 +255,6 @@
             font-size: clamp(0.9rem, 2.5vw, 1rem);
         }
 
-        /* Share section */
         .share-section {
             margin: 30px 0;
             text-align: center;
@@ -300,7 +289,6 @@
             display: none !important;
         }
 
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -323,7 +311,6 @@
             opacity: 1;
         }
 
-        /* URL display */
         .url-display {
             background: #f8f9fa;
             border: 2px dashed #667eea;
@@ -350,12 +337,10 @@
             line-height: 1.5;
         }
 
-        /* Learning style colors */
         .visual { border-left: 4px solid #28a745; }
         .auditory { border-left: 4px solid #dc3545; }
         .kinesthetic { border-left: 4px solid #ffc107; }
 
-        /* Media queries untuk perfection */
         @media (max-width: 768px) {
             .main-container {
                 padding: 10px;
@@ -430,19 +415,11 @@
                 margin-bottom: 20px;
             }
         }
-
-        /* Untuk layar sangat tinggi */
-        @media (min-height: 800px) and (max-width: 768px) {
-            .main-container {
-                padding: 20px;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="main-container">
         <div class="container">
-            <!-- Layar Selamat Datang -->
             <div id="welcomeScreen" class="welcome-screen">
                 <h1>Kuis Gaya Belajar & Kecerdasan Majemuk Anak</h1>
                 <p>
@@ -455,7 +432,6 @@
                 <button class="btn" onclick="startQuiz()">Mulai Kuis</button>
             </div>
 
-            <!-- Layar Pertanyaan -->
             <div id="questionScreen" class="question-screen hidden">
                 <div class="progress-bar">
                     <div class="progress" id="progressBar"></div>
@@ -465,19 +441,12 @@
                 <button class="btn" id="nextButton" onclick="nextQuestion()" disabled>Lanjut</button>
             </div>
 
-            <!-- Layar Hasil -->
             <div id="resultScreen" class="result-screen hidden">
                 <h1>Hasil Analisis Anak Anda</h1>
-                <div class="result-card" id="resultContent">
-                    <!-- Hasil akan dimuat di sini oleh JavaScript -->
-                </div>
+                <div class="result-card" id="resultContent"></div>
 
-                <!-- Section Kecerdasan Majemuk -->
-                <div id="intelligenceResults" class="intelligence-results">
-                    <!-- Hasil kecerdasan majemuk akan dimuat di sini -->
-                </div>
+                <div id="intelligenceResults" class="intelligence-results"></div>
 
-                <!-- Section Share -->
                 <div class="share-section">
                     <div class="share-title">Bagikan Hasil Ini</div>
                     <div class="share-buttons">
@@ -495,7 +464,6 @@
                         • Atau gunakan tombol Share ke WhatsApp untuk berbagi via chat
                     </div>
 
-                    <!-- Tampilkan URL -->
                     <div class="url-display" id="urlDisplay">
                         <strong>Link Kuis:</strong><br>
                         <span id="currentUrl">https://contoh.github.io/kuis-gaya-belajar</span>
@@ -507,14 +475,10 @@
         </div>
     </div>
 
-    <!-- Elemen tersembunyi untuk generate gambar -->
     <div id="resultImage" class="hidden"></div>
-
-    <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
 
     <script>
-        // Data pertanyaan untuk gaya belajar dan kecerdasan majemuk
         const questions = [
             {
                 question: "Ketika belajar hal baru, anak Anda cenderung:",
@@ -614,7 +578,6 @@
             }
         ];
 
-        // Definisi kecerdasan majemuk
         const intelligenceDefinitions = {
             visual: { name: "Visual", description: "Belajar melalui gambar dan penglihatan", emoji: "🎨" },
             auditory: { name: "Auditori", description: "Belajar melalui suara dan pendengaran", emoji: "🎵" },
@@ -629,7 +592,6 @@
             naturalist: { name: "Naturalis", description: "Cerdas dalam memahami alam", emoji: "🌿" }
         };
 
-        // Variabel global
         let currentQuestionIndex = 0;
         let scores = {
             visual: 0, auditory: 0, kinesthetic: 0,
@@ -640,17 +602,14 @@
         let finalResult = '';
         let topIntelligences = [];
 
-        // Set URL saat halaman dimuat
         document.getElementById('currentUrl').textContent = window.location.href;
 
-        // Fungsi untuk memulai kuis
         function startQuiz() {
             document.getElementById('welcomeScreen').classList.add('hidden');
             document.getElementById('questionScreen').classList.remove('hidden');
             showQuestion();
         }
 
-        // Fungsi untuk menampilkan pertanyaan
         function showQuestion() {
             const question = questions[currentQuestionIndex];
             document.getElementById('questionText').textContent = question.question;
@@ -666,33 +625,25 @@
                 optionsContainer.appendChild(optionElement);
             });
             
-            // Update progress bar
             const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
             document.getElementById('progressBar').style.width = `${progress}%`;
             
-            // Reset tombol lanjut
             document.getElementById('nextButton').disabled = true;
             selectedOption = null;
         }
 
-        // Fungsi untuk memilih opsi
         function selectOption(optionElement, types) {
-            // Hapus seleksi sebelumnya
             const options = document.querySelectorAll('.option');
             options.forEach(opt => opt.classList.remove('selected'));
             
-            // Tandai opsi yang dipilih
             optionElement.classList.add('selected');
             selectedOption = types;
             
-            // Aktifkan tombol lanjut
             document.getElementById('nextButton').disabled = false;
         }
 
-        // Fungsi untuk lanjut ke pertanyaan berikutnya
         function nextQuestion() {
             if (selectedOption) {
-                // Tambahkan skor untuk setiap tipe dalam opsi yang dipilih
                 for (const [type, score] of Object.entries(selectedOption)) {
                     if (scores.hasOwnProperty(type)) {
                         scores[type] += score;
@@ -709,12 +660,10 @@
             }
         }
 
-        // Fungsi untuk menampilkan hasil
         function showResult() {
             document.getElementById('questionScreen').classList.add('hidden');
             document.getElementById('resultScreen').classList.remove('hidden');
             
-            // Tentukan gaya belajar dominan
             let dominantStyle = 'visual';
             let maxScore = scores.visual;
             
@@ -727,17 +676,14 @@
                 maxScore = scores.kinesthetic;
             }
             
-            // Simpan hasil final untuk sharing
             finalResult = dominantStyle;
             
-            // Hitung kecerdasan teratas untuk sharing
             topIntelligences = Object.entries(scores)
                 .filter(([key]) => !['visual', 'auditory', 'kinesthetic'].includes(key))
                 .sort(([,a], [,b]) => b - a)
                 .slice(0, 3)
                 .map(([key]) => intelligenceDefinitions[key]);
             
-            // Tampilkan hasil berdasarkan gaya belajar dominan
             const resultContent = document.getElementById('resultContent');
             resultContent.className = `result-card ${dominantStyle}`;
             
@@ -800,20 +746,15 @@
             }
             
             resultContent.innerHTML = resultHTML;
-            
-            // Tampilkan hasil kecerdasan majemuk
             showIntelligenceResults();
         }
 
-        // Fungsi untuk menampilkan hasil kecerdasan majemuk
         function showIntelligenceResults() {
             const container = document.getElementById('intelligenceResults');
             container.innerHTML = '<h2>Profil Kecerdasan Majemuk</h2>';
             
-            // Hitung total skor maksimal yang mungkin untuk normalisasi
             const maxPossibleScores = calculateMaxPossibleScores();
             
-            // Buat array dari scores untuk diurutkan
             const intelligenceArray = Object.entries(scores)
                 .filter(([key]) => !['visual', 'auditory', 'kinesthetic'].includes(key))
                 .map(([key, value]) => {
@@ -828,7 +769,6 @@
                 })
                 .sort((a, b) => b.percentage - a.percentage);
             
-            // Tampilkan dalam container
             intelligenceArray.forEach(intelligence => {
                 const item = document.createElement('div');
                 item.className = 'intelligence-item';
@@ -843,7 +783,6 @@
                 container.appendChild(item);
             });
             
-            // Animate progress bars after a short delay
             setTimeout(() => {
                 document.querySelectorAll('.intelligence-progress').forEach(bar => {
                     bar.style.transition = 'width 1.5s ease-in-out';
@@ -851,7 +790,6 @@
             }, 100);
         }
 
-        // Fungsi untuk menghitung skor maksimal yang mungkin
         function calculateMaxPossibleScores() {
             const maxScores = {
                 visual: 0, auditory: 0, kinesthetic: 0,
@@ -872,7 +810,6 @@
             return maxScores;
         }
 
-        // Fungsi untuk mengulang kuis
         function restartQuiz() {
             currentQuestionIndex = 0;
             scores = {
@@ -888,7 +825,6 @@
             document.getElementById('welcomeScreen').classList.remove('hidden');
         }
 
-        // Fungsi untuk menampilkan toast notification
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -899,7 +835,6 @@
             }, 3000);
         }
 
-        // Fungsi untuk download gambar hasil
         function downloadResultImage() {
             showToast('Sedang membuat gambar...');
             
@@ -964,7 +899,6 @@
             
             resultImage.appendChild(content);
 
-            // Gunakan html2canvas untuk konversi ke gambar
             html2canvas(resultImage, {
                 scale: 2,
                 useCORS: true,
@@ -972,7 +906,6 @@
             }).then(canvas => {
                 const imageDataUrl = canvas.toDataURL('image/png');
                 
-                // Langsung download gambar
                 const a = document.createElement('a');
                 a.href = imageDataUrl;
                 a.download = `hasil-kuis-gaya-belajar-${finalResult}.png`;
@@ -987,7 +920,6 @@
             });
         }
 
-        // Fungsi untuk share ke WhatsApp
         function shareToWhatsApp() {
             const styleNames = {
                 visual: "Visual 🎨",
