@@ -20,6 +20,7 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            width: 100%;
         }
 
         .container {
@@ -29,7 +30,7 @@
             width: 100%;
             max-width: 900px;
             padding: 40px;
-            margin: 20px;
+            margin: 20px auto; /* Tambahkan auto untuk centering */
         }
 
         h1 {
@@ -47,6 +48,7 @@
 
         .welcome-screen, .question-screen, .result-screen {
             text-align: center;
+            width: 100%;
         }
 
         .welcome-screen p {
@@ -68,6 +70,7 @@
             margin: 10px;
             display: inline-block;
             text-decoration: none;
+            min-width: 200px; /* Tambahkan min-width untuk konsistensi */
         }
 
         .btn:hover {
@@ -96,6 +99,8 @@
             color: #333;
             margin-bottom: 30px;
             font-weight: 600;
+            text-align: center;
+            width: 100%;
         }
 
         .options {
@@ -103,6 +108,7 @@
             flex-direction: column;
             gap: 15px;
             margin-bottom: 30px;
+            width: 100%;
         }
 
         .option {
@@ -114,6 +120,7 @@
             transition: all 0.3s;
             text-align: left;
             font-size: 1.1em;
+            width: 100%;
         }
 
         .option:hover {
@@ -133,6 +140,7 @@
             height: 10px;
             margin-bottom: 20px;
             overflow: hidden;
+            width: 100%;
         }
 
         .progress {
@@ -148,6 +156,7 @@
             padding: 30px;
             margin: 20px 0;
             text-align: left;
+            width: 100%;
         }
 
         .result-title {
@@ -167,6 +176,7 @@
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 15px;
             margin: 25px 0;
+            width: 100%;
         }
 
         .intelligence-item {
@@ -215,6 +225,7 @@
         .share-section {
             margin: 30px 0;
             text-align: center;
+            width: 100%;
         }
 
         .share-title {
@@ -228,6 +239,7 @@
             justify-content: center;
             gap: 15px;
             flex-wrap: wrap;
+            width: 100%;
         }
 
         .share-btn {
@@ -236,6 +248,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            min-width: 200px;
+            justify-content: center;
         }
 
         .hidden {
@@ -255,6 +269,8 @@
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.3s;
+            max-width: 90%;
+            text-align: center;
         }
 
         .toast.show {
@@ -270,6 +286,7 @@
             word-break: break-all;
             font-size: 0.9em;
             color: #333;
+            width: 100%;
         }
 
         .share-instruction {
@@ -280,37 +297,120 @@
             margin: 15px 0;
             font-size: 0.9em;
             color: #0066cc;
+            width: 100%;
         }
 
         .visual { border-left: 4px solid #28a745; }
         .auditory { border-left: 4px solid #dc3545; }
         .kinesthetic { border-left: 4px solid #ffc107; }
 
+        /* Perbaikan khusus untuk mobile */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                display: flex;
+                align-items: flex-start; /* Ubah dari center ke flex-start untuk mobile */
+                min-height: 100vh;
+                height: auto;
+            }
+            
             .container {
                 padding: 20px;
+                margin: 10px auto;
+                width: 100%;
+                max-width: 100%;
+                border-radius: 15px;
             }
             
             h1 {
                 font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+            
+            h2 {
+                font-size: 1.4em;
             }
             
             .question {
                 font-size: 1.2em;
+                margin-bottom: 20px;
             }
 
             .share-buttons {
                 flex-direction: column;
                 align-items: center;
+                gap: 10px;
             }
 
             .share-btn {
-                width: 200px;
+                width: 100%;
+                max-width: 280px;
+                margin: 5px 0;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                margin: 5px 0;
+                padding: 15px 20px;
             }
 
             .intelligence-results {
                 grid-template-columns: 1fr;
+                gap: 10px;
             }
+
+            .result-card {
+                padding: 20px;
+                margin: 15px 0;
+            }
+
+            .options {
+                gap: 10px;
+            }
+
+            .option {
+                padding: 15px;
+                font-size: 1em;
+            }
+
+            /* Pastikan konten tidak melebihi layar */
+            .welcome-screen, .question-screen, .result-screen {
+                overflow: hidden;
+            }
+        }
+
+        /* Perbaikan untuk layar sangat kecil */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+                margin: 5px auto;
+            }
+            
+            h1 {
+                font-size: 1.6em;
+            }
+            
+            .question {
+                font-size: 1.1em;
+            }
+            
+            .btn {
+                padding: 12px 15px;
+                font-size: 1em;
+            }
+            
+            .result-card {
+                padding: 15px;
+            }
+        }
+
+        /* Pastikan HTML dan body mengambil full height */
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
         }
     </style>
 </head>
